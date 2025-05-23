@@ -1,12 +1,18 @@
+// app/layout.tsx (ou globals.tsx)
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/authContext";
+import NavBar from "./components/NavBar";
+import Sidebar from "./components/sideBar";
+import { SelectedPiecesProvider } from "./context/selectedCapBuild";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -19,15 +25,35 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`
+          ${geistSans.variable} 
+          ${geistMono.variable} 
+          ${poppins.variable} 
+          antialiased 
+          bg-[#FEFEFE]
+        `}
       >
-        {children}
+        <AuthProvider>
+          <SelectedPiecesProvider>
+            <div className="flex flex-col h-screen">
+              <NavBar />
+
+              <div className="flex flex-1 overflow-hidden">
+                <Sidebar />
+
+                <main className="flex-1 overflow-auto px-10 py-5">
+                  {children}
+                </main>
+              </div>
+            </div>
+          </SelectedPiecesProvider>
+        </AuthProvider>
       </body>
     </html>
   );
